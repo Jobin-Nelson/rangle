@@ -11,11 +11,12 @@ pub enum RangleError {
 
 fn main() {
     let args = RangleArgs::parse();
-    let target_file = satisfy_requirements(&args.file).expect("Crash and burn");
-    tangle(&args.file, &target_file);
+    let target_filename = satisfy_requirements(&args.file).expect("Crash and burn");
+    tangle(&args.file, &target_filename);
 }
 
 fn satisfy_requirements(filename: &str) -> Result<String, RangleError> {
+    // TODO expand to canonicalize path ~, $HOME
     let file = std::fs::File::open(filename).expect("No file found");
     let reader = BufReader::new(file);
     let mut target_file = String::new();
@@ -42,8 +43,12 @@ fn satisfy_requirements(filename: &str) -> Result<String, RangleError> {
 }
 
 fn tangle(source_filename: &str, target_filename: &str) {
-    let target_file = std::fs::File::create(target_filename).expect("Cannot create file");
-    let source_file = std::fs::File::open(source_filename).expect("No file found");
+    let source_path = std::path::Path::new(source_filename);
+    let target_path = source_path.with_file_name(target_filename);
+
+    let target_file = std::fs::File::create(target_path).expect("Cannot create file");
+    let source_file = std::fs::File::open(source_path).expect("No file found");
+
     let mut writer = BufWriter::new(target_file);
     let reader = BufReader::new(source_file);
     let mut can_write = false;
@@ -71,3 +76,6 @@ fn tangle(source_filename: &str, target_filename: &str) {
     }
     writer.flush().unwrap();
 }
+
+#[cfg(test)]
+mod tests;
