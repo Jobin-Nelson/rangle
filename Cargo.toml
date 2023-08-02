@@ -1,5 +1,9 @@
 [package]
 name = "rangle"
+description = "An Org-Tangle alternative"
+author = "Jobin Nelson"
+repository = "https://github.com/jobin-nelson/rangle"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 
